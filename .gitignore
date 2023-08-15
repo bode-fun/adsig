@@ -1,0 +1,6 @@
+# Build artefacts
+adsig
+adsig.exe
+
+# OS-specific files
+.DS_Store
