@@ -1,0 +1,52 @@
+connection:
+    user: <USER_DN>
+    password: ${AD_PASSWORD}
+
+template:
+    example_de:
+        # langCode: de # https://www.andiamo.co.uk/resources/iso-language-codes/
+        # files:
+        #     - example_de.html
+        #     - example_de.rtf
+        #     - example_de.txt
+        adFilter: (&(objectclass=person)(mail=*)) # TODO: Make this the default filter
+        baseDN: OU=Benutzer,DC=example,DC=local
+        excludeEmails: # Case insensitive
+            - scanner@example.local
+        fieldMapping:
+            city: l
+            company: company
+            country: co
+            department: department
+            fax: facsimileTelephoneNumber
+            firstName: sn
+            lastName: givenName
+            phone: telephoneNumber
+            postalCode: postalCode
+            street: streetAddress
+            title: title
+            web: wWWHomePage
+
+    example_en:
+        # langCode: en
+        # files:
+        #     - example_de.html
+        #     - example_de.rtf
+        #     - example_de.txt
+        adFilter: (&(objectclass=person)(mail=*))
+        baseDN: OU=Benutzer,DC=example,DC=local
+        excludeEmails:
+            - scanner@example.local
+        fieldMapping:
+            city: l
+            company: company
+            country: co
+            department: department
+            fax: facsimileTelephoneNumber
+            firstName: sn
+            lastName: givenName
+            phone: telephoneNumber
+            postalCode: postalCode
+            street: streetAddress
+            title: title
+            web: wWWHomePage
