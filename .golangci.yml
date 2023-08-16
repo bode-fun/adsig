@@ -1,4 +1,4 @@
-# Enable all linters except the deprecated ones
+# Enable all linters except the deprecated and annoying ones
 linters:
   enable-all: true
   disable:
@@ -12,3 +12,4 @@ linters:
     - ifshort
     - golint
     - deadcode
+    - depguard
