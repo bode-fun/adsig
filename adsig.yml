@@ -1,5 +1,5 @@
 connection:
-    user: <USER_DN>
+    userDN: <USER_DN>
     password: ${AD_PASSWORD} # ENV Var
 
 groups:
