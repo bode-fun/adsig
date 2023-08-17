@@ -1,15 +1,23 @@
 [connection]
 user = "<USER_DN>"
-password = "<AD_PASSWORD>"
+password = "${AD_PASSWORD}" # ENV Var
+
+[groups.primary]
+ad_filter = "(&(objectclass=person)(mail=*))" # Default value; Optional
+base_dn = "OU=Benutzer,DC=example,DC=local"   # Required
+exclude_emails = ["scanner@example.local"]    # Case insensitive list; Optional
+templates = ["example_de"]                    # Required
 
 [template.example_de]
-# lang_code = "de" # https://www.andiamo.co.uk/resources/iso-language-codes/
-# files = ["example_de.html", "example_de.rtf", "example_de.txt"]
-ad_filter = "(&(objectclass=person)(mail=*))" # TODO: Make this the default filter
-base_dn = "OU=Benutzer,DC=example,DC=local"
-exclude_emails = ["scanner@example.local"]    # Case insensitive
+lang_code = "de" # https://www.andiamo.co.uk/resources/iso-language-codes/
+dir = "templates/example_de_christmas" # Default value: "<CWD>" + "templates" + "<TEMPLATE_NAME>"; Optional
+files = [
+    "signature.html",
+    "signature.rtf",
+    "signature.txt",
+] # Default value: "signature" with html, rtf, and txt extension; Optional
 
-[template.example_de.field_mapping]
+[template.example_de.field_mapping] # Required
 first_name = "sn"
 last_name = "givenName"
 title = "title"
@@ -22,13 +30,6 @@ country = "co"
 phone = "telephoneNumber"
 fax = "facsimileTelephoneNumber"
 web = "wWWHomePage"
-
-[template.example_en]
-# lang_code = "en-gb" # https://www.andiamo.co.uk/resources/iso-language-codes/
-# files = ["example_en.html", "example_en.rtf", "example_en.txt"]
-ad_filter = "(&(objectclass=person)(mail=*))"
-base_dn = "OU=Benutzer,DC=example,DC=local"
-exclude_emails = ["scanner@example.local"]    # Case insensitive
 
 [template.example_en.field_mapping]
 first_name = "sn"

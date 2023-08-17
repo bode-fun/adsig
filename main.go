@@ -34,11 +34,14 @@ func mainE(log *log.Logger) error {
 			User     string
 			Password string `yaml:",omitempty"`
 		}
-		Template map[string]struct {
-			AdFilter      string            `yaml:"adFilter,omitempty"`
-			BaseDN        string            `yaml:"baseDN"`
-			ExcludeEmails []string          `yaml:"excludeEmails,omitempty"`
-			FieldMapping  map[string]string `yaml:"fieldMapping"` // TODO: Maybe I will need to case the index? https://stackoverflow.com/questions/75535015/go-to-unmarshal-into-uppercase-keys
+		Groups map[string]struct {
+			AdFilter      string   `yaml:"adFilter,omitempty"`
+			BaseDN        string   `yaml:"baseDN"`
+			ExcludeEmails []string `yaml:"excludeEmails,omitempty"`
+			Templates     []string
+		}
+		Templates map[string]struct {
+			FieldMapping map[string]string `yaml:"fieldMapping"` // TODO: Maybe I will need to case the index? https://stackoverflow.com/questions/75535015/go-to-unmarshal-into-uppercase-keys
 		}
 	}
 

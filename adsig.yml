@@ -1,19 +1,27 @@
 connection:
     user: <USER_DN>
-    password: ${AD_PASSWORD}
+    password: ${AD_PASSWORD} # ENV Var
 
-template:
-    example_de:
-        # langCode: de # https://www.andiamo.co.uk/resources/iso-language-codes/
-        # files:
-        #     - example_de.html
-        #     - example_de.rtf
-        #     - example_de.txt
-        adFilter: (&(objectclass=person)(mail=*)) # TODO: Make this the default filter
-        baseDN: OU=Benutzer,DC=example,DC=local
-        excludeEmails: # Case insensitive
+groups:
+    primary:
+        adFilter: (&(objectclass=person)(mail=*)) # Default value; Optional
+        baseDN: OU=Benutzer,DC=example,DC=local # Required
+        excludeEmails: # Case insensitive list; Optional
             - scanner@example.local
-        fieldMapping:
+        templates: # Required
+            - example_de
+            - example_en
+
+templates:
+    # Optional and required fields filled out
+    example_de:
+        # langCode: de # https://www.andiamo.co.uk/resources/iso-language-codes/ # TODO: Language lookup table
+        # dir: "templates/example_de_christmas" # Default value: "<CWD>" + "templates" + "<TEMPLATE_NAME>"; Optional
+        # files: # Default value: "signature" with html, rtf, and txt extension; Optional
+        #     - signature.html
+        #     - signature.rtf
+        #     - signature.txt
+        fieldMapping: # Required
             city: l
             company: company
             country: co
@@ -27,16 +35,8 @@ template:
             title: title
             web: wWWHomePage
 
+    # Optional fields removed
     example_en:
-        # langCode: en
-        # files:
-        #     - example_de.html
-        #     - example_de.rtf
-        #     - example_de.txt
-        adFilter: (&(objectclass=person)(mail=*))
-        baseDN: OU=Benutzer,DC=example,DC=local
-        excludeEmails:
-            - scanner@example.local
         fieldMapping:
             city: l
             company: company
