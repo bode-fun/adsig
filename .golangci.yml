@@ -2,6 +2,7 @@
 linters:
   enable-all: true
   disable:
+    # Deprecated
     - nosnakecase
     - exhaustivestruct
     - varcheck
@@ -12,4 +13,5 @@ linters:
     - ifshort
     - golint
     - deadcode
+    # Not relevant for me
     - depguard

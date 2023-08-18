@@ -1,2 +1,2 @@
-lint:
-    golangci-lint run
+lint PKG="./...":
+    golangci-lint run {{PKG}}
