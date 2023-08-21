@@ -21,7 +21,7 @@ templates:
         #     - signature.html
         #     - signature.rtf
         #     - signature.txt
-        fieldMapping: # Required
+        fields: # Required
             city: l
             company: company
             country: co
@@ -37,7 +37,7 @@ templates:
 
     # Optional fields removed
     example_en:
-        fieldMapping:
+        fields:
             city: l
             company: company
             country: co

@@ -23,7 +23,7 @@ type Group struct {
 
 type Template struct {
 	// TODO: Maybe I will need to case the keys? https://stackoverflow.com/questions/75535015/go-to-unmarshal-into-uppercase-keys
-	FieldMapping map[string]string `yaml:"fieldMapping"`
+	Fields map[string]string `yaml:"fields"`
 }
 
 type Config struct {
