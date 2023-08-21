@@ -13,5 +13,9 @@ linters:
     - ifshort
     - golint
     - deadcode
+    # Annoying, enable in prod
+    - godox # TODO: Turn on when I want to tackle TODOs
     # Not relevant for me
     - depguard
+    # Causes false positives
+    - gocritic # Does not recognize errors.Is
