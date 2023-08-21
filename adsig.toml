@@ -1,3 +1,9 @@
+[server] # TODO: Required
+host = "127.0.0.1" # TODO: Required
+port = 8080        # TODO: Required
+read_timeout = 10  # TODO: Optional
+write_timeout = 10 # TODO: Optional
+
 [connection] # TODO: Required
 user = "<USER_DN>"
 password = "${AD_PASSWORD}" # ENV Var
