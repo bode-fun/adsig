@@ -62,7 +62,8 @@ func FromYAML(r io.Reader) (Config, error) {
 
 	// err can be io.EOF or yaml.TypeError
 	if err := decoder.Decode(&cnf); err != nil {
-		if errors.Is(err, &yaml.TypeError{}) { //nolint
+		var yamlTypeErr yaml.TypeError
+		if errors.Is(err, &yamlTypeErr) {
 			// TODO: Wrap the error.
 			return Config{}, ErrDecode
 		} else if errors.Is(err, io.EOF) {
