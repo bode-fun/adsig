@@ -1,1 +1,1 @@
-Bye [[ .Fields.firstName ]]
+Tschüss [[ .Fields.firstName ]]
