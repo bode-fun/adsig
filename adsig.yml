@@ -1,27 +1,27 @@
-connection:
+connection: # TODO: Required
     userDN: <USER_DN>
     password: ${AD_PASSWORD} # ENV Var
 
 groups:
     primary:
-        adFilter: (&(objectclass=person)(mail=*)) # Default value; Optional
-        baseDN: OU=Benutzer,DC=example,DC=local # Required
-        excludeEmails: # Case insensitive list; Optional
+        adFilter: (&(objectclass=person)(mail=*)) # Default value; TODO: Optional
+        baseDN: OU=Benutzer,DC=example,DC=local # TODO: Required
+        excludeEmails: # Case insensitive list; TODO: Optional
             - scanner@example.local
-        templates: # Required
+        templates: # TODO: Required
             - example_de
             - example_en
 
 templates:
-    # Optional and required fields filled out
+    # TODO: Optional and TODO: Required fields filled out
     example_de:
         # langCode: de # https://www.andiamo.co.uk/resources/iso-language-codes/ # TODO: Language lookup table
-        # dir: "templates/example_de_christmas" # Default value: "<CWD>" + "templates" + "<TEMPLATE_NAME>"; Optional
-        # files: # Default value: "signature" with html, rtf, and txt extension; Optional
+        # dir: "templates/example_de_christmas" # Default value: "<CWD>" + "templates" + "<TEMPLATE_NAME>"; TODO: Optional
+        # files: # Default value: "signature" with html, rtf, and txt extension; TODO: Optional
         #     - signature.html
         #     - signature.rtf
         #     - signature.txt
-        fields: # Required
+        fields: # TODO: Required
             city: l
             company: company
             country: co

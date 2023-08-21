@@ -1,23 +1,25 @@
-[connection]
+[connection] # TODO: Required
 user = "<USER_DN>"
 password = "${AD_PASSWORD}" # ENV Var
 
 [groups.primary]
-ad_filter = "(&(objectclass=person)(mail=*))" # Default value; Optional
-base_dn = "OU=Benutzer,DC=example,DC=local"   # Required
-exclude_emails = ["scanner@example.local"]    # Case insensitive list; Optional
-templates = ["example_de"]                    # Required
+ad_filter = "(&(objectclass=person)(mail=*))" # Default value; TODO: Optional
+base_dn = "OU=Benutzer,DC=example,DC=local" # TODO: Required
+exclude_emails = [
+    "scanner@example.local",
+] # Case insensitive list; TODO: Optional
+templates = ["example_de"] # TODO: Required
 
 [template.example_de]
 lang_code = "de" # https://www.andiamo.co.uk/resources/iso-language-codes/
-dir = "templates/example_de_christmas" # Default value: "<CWD>" + "templates" + "<TEMPLATE_NAME>"; Optional
+dir = "templates/example_de_christmas" # Default value: "<CWD>" + "templates" + "<TEMPLATE_NAME>"; TODO: Optional
 files = [
     "signature.html",
     "signature.rtf",
     "signature.txt",
-] # Default value: "signature" with html, rtf, and txt extension; Optional
+] # Default value: "signature" with html, rtf, and txt extension; TODO: Optional
 
-[template.example_de.fields] # Required
+[template.example_de.fields] # TODO: Required
 first_name = "sn"
 last_name = "givenName"
 title = "title"
