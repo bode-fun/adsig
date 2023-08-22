@@ -1,34 +1,27 @@
-server: # TODO: Required
-    host: "127.0.0.1" # TODO: Required
-    port: 8080 # TODO: Required
-    readTimeout: 10 # TODO: Optional
-    writeTimeout: 10 # TODO: Optional
+server:
+    host: "127.0.0.1"
+    port: 8080
+    readTimeout: 30
+    writeTimeout: 30
 
-connection: # TODO: Required
+connection:
     address: ldap://example.local:389
-    userDN: <USER_DN>
-    password: ${AD_PASSWORD} # ENV Var
+    userDN: CN=ro_user,CN=Users,DC=example,DC=local
+    password: Password1234
 
 groups:
     primary:
-        adFilter: (&(objectclass=person)(mail=*)) # Default value; TODO: Optional
-        baseDN: OU=Benutzer,DC=example,DC=local # TODO: Required
-        excludeEmails: # Case insensitive list; TODO: Optional
+        adFilter: (&(objectclass=person)(mail=*))
+        baseDN: OU=Users,DC=example,DC=local
+        excludeEmails: # Case insensitive, optional list.
             - scanner@example.local
-        templates: # TODO: Required
+        templates:
             - example_de
             - example_en
 
 templates:
-    # TODO: Optional and TODO: Required fields filled out
     example_de:
-        # langCode: de # https://www.andiamo.co.uk/resources/iso-language-codes/ # TODO: Language lookup table
-        # dir: "templates/example_de_christmas" # Default value: "<CWD>" + "templates" + "<TEMPLATE_NAME>"; TODO: Optional
-        # files: # Default value: "signature" with html, rtf, and txt extension; TODO: Optional
-        #     - signature.html
-        #     - signature.rtf
-        #     - signature.txt
-        fields: # TODO: Required
+        fields:
             city: l
             company: company
             country: co
@@ -42,7 +35,6 @@ templates:
             title: title
             web: wWWHomePage
 
-    # Optional fields removed
     example_en:
         fields:
             city: l
