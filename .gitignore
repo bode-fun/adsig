@@ -1,5 +1,6 @@
 # Build artefacts
 adsig
+adsig.yml
 adsig.exe
 
 # OS-specific files
