@@ -5,11 +5,14 @@ import (
 	"fmt"
 	"net/http"
 	"os"
+	"path/filepath"
+	"strings"
 	"time"
 
 	"git.bode.fun/adsig/config"
 	"git.bode.fun/adsig/server"
 	"github.com/charmbracelet/log"
+	"github.com/go-ldap/ldap/v3"
 )
 
 var Name = "adsig" //nolint
@@ -29,11 +32,13 @@ func main() {
 type Template struct {
 	Name   string
 	Fields map[string]string
+	Files  []string
 }
 
 type Group struct {
 	Name      string
 	Templates []Template
+	Members   []*ldap.Entry
 }
 
 func mainE(log *log.Logger) error {
@@ -48,15 +53,31 @@ func mainE(log *log.Logger) error {
 		return err
 	}
 
-	templates := make([]Template, 0)
+	conn, err := ldap.DialURL(cnf.Connection.Address)
+	if err != nil {
+		return err
+	}
 
-	for cnfTmplName, cnfTmpl := range cnf.Templates {
-		tmpl := Template{
-			Name:   cnfTmplName,
-			Fields: cnfTmpl.Fields,
-		}
+	err = conn.Bind(cnf.Connection.UserDN, cnf.Connection.Password)
+	if err != nil {
+		return err
+	}
 
-		templates = append(templates, tmpl)
+	groups, err := collectTemplateGroups(cnf, conn)
+	if err != nil {
+		return err
+	}
+
+	for _, group := range groups {
+		log.Infof("Group %s: %d Members", group.Name, len(group.Members))
+	}
+	return nil
+}
+
+func collectTemplateGroups(cnf config.Config, conn *ldap.Conn) ([]Group, error) {
+	templates, err := collectTemplates(cnf)
+	if err != nil {
+		return nil, err
 	}
 
 	groups := make([]Group, 0)
@@ -65,6 +86,36 @@ func mainE(log *log.Logger) error {
 		group := Group{
 			Name:      cnfGroupName,
 			Templates: make([]Template, 0),
+		}
+
+		searchRequest := &ldap.SearchRequest{
+			BaseDN: cnfGroup.BaseDN,
+			Scope:  ldap.ScopeWholeSubtree,
+			Filter: cnfGroup.AdFilter,
+		}
+
+		searchRes, err := conn.Search(searchRequest)
+		if err != nil {
+			return nil, err
+		}
+
+		for _, entry := range searchRes.Entries {
+			email := strings.ToLower(strings.TrimSpace(entry.GetAttributeValue("mail")))
+			if email != "" {
+				inExcludeList := false
+
+				for _, excludedEmail := range cnfGroup.ExcludeEmails {
+					if excludedEmail == email {
+						inExcludeList = true
+
+						break
+					}
+				}
+
+				if !inExcludeList {
+					group.Members = append(group.Members, entry)
+				}
+			}
 		}
 
 		// Add templates to group
@@ -79,9 +130,60 @@ func mainE(log *log.Logger) error {
 		groups = append(groups, group)
 	}
 
-	log.Printf("%#v", groups)
+	return groups, nil
+}
 
-	return nil
+func collectTemplates(cnf config.Config) ([]Template, error) {
+	// Get templates folder
+	wd, err := os.Getwd()
+	if err != nil {
+		return nil, err
+	}
+
+	templateDir := filepath.Join(wd, "templates")
+
+	fileInfo, err := os.Stat(templateDir)
+	if err != nil || !fileInfo.IsDir() {
+		return nil, errors.New("main: templates folder is not present or can not be opened")
+	}
+
+	// Get templates
+	templates := make([]Template, 0)
+
+	for cnfTmplName, cnfTmpl := range cnf.Templates {
+		tmpl := Template{
+			Name:   cnfTmplName,
+			Fields: cnfTmpl.Fields,
+			Files:  make([]string, 0),
+		}
+
+		// Add template files to template
+		tmplDir := filepath.Join(templateDir, tmpl.Name)
+
+		fileInfo, err := os.Stat(tmplDir)
+		if err != nil || !fileInfo.IsDir() {
+			return nil, errors.New("main: template folder is not present or can not be opened")
+		}
+
+		files := []string{
+			"signature.html",
+			"signature.rtf",
+			"signature.txt",
+		}
+
+		for _, file := range files {
+			signaturePath := filepath.Join(tmplDir, file)
+			if _, err := os.Stat(signaturePath); err != nil {
+				return nil, err
+			}
+
+			tmpl.Files = append(tmpl.Files, signaturePath)
+		}
+
+		templates = append(templates, tmpl)
+	}
+
+	return templates, nil
 }
 
 func startServer(log *log.Logger, cnf config.Config) error {
@@ -93,8 +195,8 @@ func startServer(log *log.Logger, cnf config.Config) error {
 	srv := &http.Server{
 		Addr:         addr,
 		Handler:      handler,
-		ReadTimeout:  time.Duration(cnf.Server.ReadTimeout) * time.Second,
-		WriteTimeout: time.Duration(cnf.Server.WriteTimeout) * time.Second,
+		ReadTimeout:  cnf.Server.ReadTimeout * time.Second,
+		WriteTimeout: cnf.Server.WriteTimeout * time.Second,
 	}
 
 	log.Infof("Starting server on %s", addr)
