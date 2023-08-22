@@ -28,6 +28,7 @@ type Server struct {
 }
 
 type Connection struct {
+	Address  string `yaml:"address"`  //nolint
 	UserDN   string `yaml:"userDN"`   //nolint
 	Password string `yaml:"password"` // TODO: Make this optional.
 }

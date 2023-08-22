@@ -5,6 +5,7 @@ server: # TODO: Required
     writeTimeout: 10 # TODO: Optional
 
 connection: # TODO: Required
+    address: ldap://example.local:389
     userDN: <USER_DN>
     password: ${AD_PASSWORD} # ENV Var
 
