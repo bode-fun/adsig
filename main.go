@@ -26,6 +26,16 @@ func main() {
 	}
 }
 
+type Template struct {
+	Name   string
+	Fields map[string]string
+}
+
+type Group struct {
+	Name      string
+	Templates []Template
+}
+
 func mainE(log *log.Logger) error {
 	cnfFile, err := os.Open("adsig.yml")
 	if err != nil {
@@ -38,6 +48,43 @@ func mainE(log *log.Logger) error {
 		return err
 	}
 
+	templates := make([]Template, 0)
+
+	for cnfTmplName, cnfTmpl := range cnf.Templates {
+		tmpl := Template{
+			Name:   cnfTmplName,
+			Fields: cnfTmpl.Fields,
+		}
+
+		templates = append(templates, tmpl)
+	}
+
+	groups := make([]Group, 0)
+
+	for cnfGroupName, cnfGroup := range cnf.Groups {
+		group := Group{
+			Name:      cnfGroupName,
+			Templates: make([]Template, 0),
+		}
+
+		// Add templates to group
+		for _, groupTmpl := range cnfGroup.Templates {
+			for _, tmpl := range templates {
+				if groupTmpl == tmpl.Name {
+					group.Templates = append(group.Templates, tmpl)
+				}
+			}
+		}
+
+		groups = append(groups, group)
+	}
+
+	log.Printf("%#v", groups)
+
+	return nil
+}
+
+func startServer(log *log.Logger, cnf config.Config) error {
 	addr := fmt.Sprintf("%s:%d", cnf.Server.Host, cnf.Server.Port)
 	handler := server.New()
 
