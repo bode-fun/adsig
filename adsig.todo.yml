@@ -1,0 +1,58 @@
+server: # TODO: Required
+    host: "127.0.0.1" # TODO: Required
+    port: 8080 # TODO: Required
+    readTimeout: 30 # TODO: Optional
+    writeTimeout: 30 # TODO: Optional
+
+connection: # TODO: Required
+    address: ldap://example.local:389 # TODO: ENV Var; Required
+    userDN: ${USER_DN} # TODO: ENV Var; Required
+    password: ${AD_PASSWORD} # TODO: ENV Var; Optional
+
+groups: # TODO: Required
+    primary:
+        adFilter: (&(objectclass=person)(mail=*)) # TODO: Default value; Optional
+        baseDN: OU=Benutzer,DC=example,DC=local # TODO: Required
+        excludeEmails: # TODO: Case insensitive list; Optional
+            - scanner@example.local
+        templates: # TODO: Required
+            - example_de
+            - example_en
+
+templates:
+    example_de:
+        # langCode: de # https://www.andiamo.co.uk/resources/iso-language-codes/ # TODO: Language lookup table
+        # dir: "templates/example_de_christmas" # TODO: Default value: "<CWD>" + "templates" + "<TEMPLATE_NAME>"; Optional
+        # files: # TODO: Default value: "signature" with html, rtf, and txt extension; Optional
+        #     - signature.html
+        #     - signature.rtf
+        #     - signature.txt
+        fields: # TODO: Required
+            city: l
+            company: company
+            country: co
+            department: department
+            fax: facsimileTelephoneNumber
+            firstName: sn
+            lastName: givenName
+            phone: telephoneNumber
+            postalCode: postalCode
+            street: streetAddress
+            title: title
+            web: wWWHomePage
+
+    # Optional fields removed
+    example_en:
+        fields:
+            city: l
+            company: company
+            country: co
+            department: department
+            fax: facsimileTelephoneNumber
+            firstName: sn
+            lastName: givenName
+            phone: telephoneNumber
+            postalCode: postalCode
+            street: streetAddress
+            title: title
+            web: wWWHomePage
