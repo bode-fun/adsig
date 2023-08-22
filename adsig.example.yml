@@ -1,8 +1,8 @@
 server:
     host: "127.0.0.1"
     port: 8080
-    readTimeout: 30
-    writeTimeout: 30
+    readTimeout: 30 # Optional, default value.
+    writeTimeout: 30 # Optional, default value.
 
 connection:
     address: ldap://example.local:389
@@ -11,9 +11,9 @@ connection:
 
 groups:
     primary:
-        adFilter: (&(objectclass=person)(mail=*))
+        adFilter: (&(objectclass=person)(mail=*)) # Optional, default value.
         baseDN: OU=Users,DC=example,DC=local
-        excludeEmails: # Case insensitive, optional list.
+        excludeEmails: # Optional, case insensitive list.
             - scanner@example.local
         templates:
             - example_de
@@ -21,7 +21,7 @@ groups:
 
 templates:
     example_de:
-        fields:
+        fields: # Optional.
             city: l
             company: company
             country: co
