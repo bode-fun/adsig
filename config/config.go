@@ -3,9 +3,9 @@ package config
 import (
 	"errors"
 	"io"
-	"strings"
 	"time"
 
+	"git.bode.fun/adsig/internal/util"
 	"gopkg.in/yaml.v3"
 )
 
@@ -91,7 +91,7 @@ func (g *Group) setDefaults() {
 
 func (g *Group) normalize() {
 	for i, email := range g.ExcludeEmails {
-		g.ExcludeEmails[i] = strings.TrimSpace(strings.ToLower(email))
+		g.ExcludeEmails[i] = util.NormalizeEmail(email)
 	}
 }
 
