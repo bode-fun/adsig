@@ -1,8 +1,8 @@
 server: # TODO: Required
     host: "127.0.0.1" # TODO: Required
     port: 8080 # TODO: Required
-    readTimeout: 30 # TODO: Optional
-    writeTimeout: 30 # TODO: Optional
+    readTimeout: 30
+    writeTimeout: 30
 
 connection: # TODO: Required
     address: ldap://example.local:389 # TODO: ENV Var; Required
@@ -11,9 +11,9 @@ connection: # TODO: Required
 
 groups: # TODO: Required
     primary:
-        adFilter: (&(objectclass=person)(mail=*)) # TODO: Default value; Optional
+        adFilter: (&(objectclass=person)(mail=*))
         baseDN: OU=Benutzer,DC=example,DC=local # TODO: Required
-        excludeEmails: # TODO: Case insensitive list; Optional
+        excludeEmails:
             - scanner@example.local
         templates: # TODO: Required
             - example_de
