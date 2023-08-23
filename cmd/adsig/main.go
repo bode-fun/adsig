@@ -2,14 +2,15 @@ package main
 
 import (
 	"errors"
+	"flag"
 	"fmt"
 	"net/http"
 	"os"
-	"path/filepath"
-	"strings"
 	"time"
 
+	"git.bode.fun/adsig"
 	"git.bode.fun/adsig/config"
+	"git.bode.fun/adsig/internal/util"
 	"git.bode.fun/adsig/server"
 	"github.com/charmbracelet/log"
 	"github.com/go-ldap/ldap/v3"
@@ -18,30 +19,31 @@ import (
 var Name = "adsig" //nolint
 
 func main() {
-	log := log.NewWithOptions(os.Stderr, log.Options{ //nolint
-		Prefix:          Name,
-		ReportTimestamp: true,
-		ReportCaller:    true,
-	})
+	var logOpt log.Options
+
+	logOpt.Prefix = Name
+	logOpt.ReportTimestamp = true
+	logOpt.ReportCaller = true
+
+	log := log.NewWithOptions(os.Stderr, logOpt)
 
 	if err := mainE(log); err != nil {
 		log.Fatal(err)
 	}
 }
 
-type Template struct {
-	Name   string
-	Fields map[string]string
-	Files  []string
-}
-
-type Group struct {
-	Name      string
-	Templates []Template
-	Members   []*ldap.Entry
-}
-
 func mainE(log *log.Logger) error {
+	var emailSearch string
+	flag.StringVar(&emailSearch, "email", "", "The email to search for")
+
+	flag.Parse()
+
+	if emailSearch == "" {
+		return errors.New("email required but not provided")
+	}
+
+	emailSearch = util.NormalizeEmail(emailSearch)
+
 	cnfFile, err := os.Open("adsig.yml")
 	if err != nil {
 		return err
@@ -63,127 +65,19 @@ func mainE(log *log.Logger) error {
 		return err
 	}
 
-	groups, err := collectTemplateGroups(cnf, conn)
+	groups, err := adsig.GroupsFromConfig(cnf, conn)
 	if err != nil {
 		return err
 	}
 
 	for _, group := range groups {
-		log.Infof("Group %s: %d Members", group.Name, len(group.Members))
+		if group.ContainsEmail(emailSearch) {
+			log.Infof("%s is a member of the group \"%s\" with %d members", emailSearch, group.Name, len(group.Members))
+		}
+
+		log.Infof("%#v\n", group.Templates)
 	}
 	return nil
-}
-
-func collectTemplateGroups(cnf config.Config, conn *ldap.Conn) ([]Group, error) {
-	templates, err := collectTemplates(cnf)
-	if err != nil {
-		return nil, err
-	}
-
-	groups := make([]Group, 0)
-
-	for cnfGroupName, cnfGroup := range cnf.Groups {
-		group := Group{
-			Name:      cnfGroupName,
-			Templates: make([]Template, 0),
-		}
-
-		searchRequest := &ldap.SearchRequest{
-			BaseDN: cnfGroup.BaseDN,
-			Scope:  ldap.ScopeWholeSubtree,
-			Filter: cnfGroup.AdFilter,
-		}
-
-		searchRes, err := conn.Search(searchRequest)
-		if err != nil {
-			return nil, err
-		}
-
-		for _, entry := range searchRes.Entries {
-			email := strings.ToLower(strings.TrimSpace(entry.GetAttributeValue("mail")))
-			if email != "" {
-				inExcludeList := false
-
-				for _, excludedEmail := range cnfGroup.ExcludeEmails {
-					if excludedEmail == email {
-						inExcludeList = true
-
-						break
-					}
-				}
-
-				if !inExcludeList {
-					group.Members = append(group.Members, entry)
-				}
-			}
-		}
-
-		// Add templates to group
-		for _, groupTmpl := range cnfGroup.Templates {
-			for _, tmpl := range templates {
-				if groupTmpl == tmpl.Name {
-					group.Templates = append(group.Templates, tmpl)
-				}
-			}
-		}
-
-		groups = append(groups, group)
-	}
-
-	return groups, nil
-}
-
-func collectTemplates(cnf config.Config) ([]Template, error) {
-	// Get templates folder
-	wd, err := os.Getwd()
-	if err != nil {
-		return nil, err
-	}
-
-	templateDir := filepath.Join(wd, "templates")
-
-	fileInfo, err := os.Stat(templateDir)
-	if err != nil || !fileInfo.IsDir() {
-		return nil, errors.New("main: templates folder is not present or can not be opened")
-	}
-
-	// Get templates
-	templates := make([]Template, 0)
-
-	for cnfTmplName, cnfTmpl := range cnf.Templates {
-		tmpl := Template{
-			Name:   cnfTmplName,
-			Fields: cnfTmpl.Fields,
-			Files:  make([]string, 0),
-		}
-
-		// Add template files to template
-		tmplDir := filepath.Join(templateDir, tmpl.Name)
-
-		fileInfo, err := os.Stat(tmplDir)
-		if err != nil || !fileInfo.IsDir() {
-			return nil, errors.New("main: template folder is not present or can not be opened")
-		}
-
-		files := []string{
-			"signature.html",
-			"signature.rtf",
-			"signature.txt",
-		}
-
-		for _, file := range files {
-			signaturePath := filepath.Join(tmplDir, file)
-			if _, err := os.Stat(signaturePath); err != nil {
-				return nil, err
-			}
-
-			tmpl.Files = append(tmpl.Files, signaturePath)
-		}
-
-		templates = append(templates, tmpl)
-	}
-
-	return templates, nil
 }
 
 func startServer(log *log.Logger, cnf config.Config) error {
