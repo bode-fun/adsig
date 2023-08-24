@@ -33,17 +33,17 @@ func main() {
 }
 
 func mainE(log *log.Logger) error {
-	var emailSearch string
+	var accountSearch string
 
-	flag.StringVar(&emailSearch, "email", "", "The email to search for")
+	flag.StringVar(&accountSearch, "account", "", "The account to search for")
 
 	flag.Parse()
 
-	if emailSearch == "" {
+	if accountSearch == "" {
 		return errors.New("email required but not provided")
 	}
 
-	emailSearch = util.NormalizeEmail(emailSearch)
+	accountSearch = util.NormalizeEmail(accountSearch)
 
 	cnfFile, err := os.Open("adsig.yml")
 	if err != nil {
@@ -72,8 +72,8 @@ func mainE(log *log.Logger) error {
 	}
 
 	for _, group := range groups {
-		if ok, member := group.MemberByEmail(emailSearch); ok {
-			log.Infof("%s is a member of the group \"%s\" with %d members", emailSearch, group.Name, len(group.Members))
+		if ok, member := group.MemberBySamAccountName(accountSearch); ok {
+			log.Infof("%s is a member of the group \"%s\" with %d members", accountSearch, group.Name, len(group.Members))
 
 			for _, sig := range group.Signatures {
 				tmpls, err := sig.ParseFiles()

@@ -12,13 +12,11 @@ type Group struct {
 	Members    []*ldap.Entry
 }
 
-func (g Group) MemberByEmail(email string) (ok bool, member *ldap.Entry) {
-	email = util.NormalizeEmail(email)
-
+func (g Group) MemberBySamAccountName(account string) (ok bool, member *ldap.Entry) {
 	for _, member := range g.Members {
-		memberEmail := util.NormalizeEmail(member.GetAttributeValue("mail"))
+		memberEmail := member.GetAttributeValue("sAMAccountName")
 
-		if memberEmail == email {
+		if memberEmail == account {
 			return true, member
 		}
 	}
