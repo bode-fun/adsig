@@ -14,8 +14,17 @@
 ## API
 
 - [ ] Add API to request signatures for a given user.
+  - [ ] Use DN or sAMAccountName as identifier, because multiple user might share an email address.
+
+## Error Handling
+
+- [ ] Add multi-error, where it provides usable information.
+- [ ] Wrap errors.
+- [ ] Recover from errors, where it makes sense.
 
 ## Optimizations
 
 - [ ] Don't rebuild the Group/Member tree every request.
 - [ ] Use a cache or DB for the generated Signatures.
+- [ ] Try to reduce the references kept around in the Group/Member tree.
+- [ ] Store generated templates in an in-memory store
