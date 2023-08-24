@@ -71,11 +71,34 @@ func mainE(log *log.Logger) error {
 	}
 
 	for _, group := range groups {
-		if group.ContainsEmail(emailSearch) {
+		if ok, member := group.MemberByEmail(emailSearch); ok {
 			log.Infof("%s is a member of the group \"%s\" with %d members", emailSearch, group.Name, len(group.Members))
-		}
 
-		log.Infof("%#v\n", group.Templates)
+			for _, gTmpl := range group.Templates {
+				txtTmpls, err := gTmpl.ParseFiles()
+
+				if err != nil {
+					return err
+				}
+
+				var v struct {
+					Fields map[string]string
+				}
+
+				v.Fields = make(map[string]string)
+
+				for key, attribute := range gTmpl.Fields {
+					v.Fields[key] = member.GetAttributeValue(attribute)
+				}
+
+				for _, txtTmpl := range txtTmpls {
+					fmt.Println()
+					fmt.Println(txtTmpl.Name())
+					fmt.Println("------------------------------------------------")
+					txtTmpl.Execute(os.Stdout, v)
+				}
+			}
+		}
 	}
 	return nil
 }

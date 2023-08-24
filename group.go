@@ -12,18 +12,18 @@ type Group struct {
 	Members   []*ldap.Entry
 }
 
-func (g Group) ContainsEmail(email string) bool {
+func (g Group) MemberByEmail(email string) (ok bool, member *ldap.Entry) {
 	email = util.NormalizeEmail(email)
 
 	for _, member := range g.Members {
 		memberEmail := util.NormalizeEmail(member.GetAttributeValue("mail"))
 
 		if memberEmail == email {
-			return true
+			return true, member
 		}
 	}
 
-	return false
+	return false, nil
 }
 
 func GroupsFromConfig(cnf config.Config, conn *ldap.Conn) ([]Group, error) {

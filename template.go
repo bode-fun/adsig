@@ -4,6 +4,7 @@ import (
 	"errors"
 	"os"
 	"path/filepath"
+	"text/template"
 
 	"git.bode.fun/adsig/config"
 )
@@ -12,6 +13,43 @@ type Template struct {
 	Name   string
 	Fields map[string]string
 	Files  []string
+}
+
+func (t Template) ParseFiles() ([]*template.Template, error) {
+	tmpls := make([]*template.Template, 0)
+
+	supportedExtensions := []string{
+		".rtf",
+		".txt",
+		".html",
+		".htm",
+	}
+
+	for _, fPath := range t.Files {
+		templateName := filepath.Base(fPath)
+		templateExt := filepath.Ext(fPath)
+
+		isSupportedExt := false
+
+		for _, ext := range supportedExtensions {
+			if templateExt == ext {
+				isSupportedExt = true
+			}
+		}
+
+		if !isSupportedExt {
+			continue
+		}
+
+		tmpl, err := template.New(templateName).Delims("[[", "]]").ParseFiles(fPath)
+		if err != nil {
+			return nil, err
+		}
+
+		tmpls = append(tmpls, tmpl)
+	}
+
+	return tmpls, nil
 }
 
 func filterTemplatesByName(src []Template, names []string) []Template {
@@ -58,24 +96,16 @@ func templatesFromConfig(cnf config.Config) ([]Template, error) {
 }
 
 func getFilesForTemplate(templatesDir, signatureName string) ([]string, error) {
-	// Add template files to template
-	signatureDir := filepath.Join(templatesDir, signatureName)
-
-	if signatureDirInfo, err := os.Stat(signatureDir); err != nil || !signatureDirInfo.IsDir() {
-		// FIXME: Remove dynamic error
-		return nil, errors.New("main: template folder is not present or can not be opened")
-	}
-
 	filePaths := make([]string, 0)
 
-	signatureFileNames := []string{
-		"signature.html",
-		"signature.rtf",
-		"signature.txt",
+	signatureExtensions := []string{
+		".html",
+		".rtf",
+		".txt",
 	}
 
-	for _, fileName := range signatureFileNames {
-		signaturePath := filepath.Join(signatureDir, fileName)
+	for _, ext := range signatureExtensions {
+		signaturePath := filepath.Join(templatesDir, signatureName+ext)
 		if _, err := os.Stat(signaturePath); err != nil {
 			return nil, err
 		}
