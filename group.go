@@ -14,9 +14,9 @@ type Group struct {
 
 func (g Group) MemberBySamAccountName(account string) (ok bool, member *ldap.Entry) {
 	for _, member := range g.Members {
-		memberEmail := member.GetAttributeValue("sAMAccountName")
+		memberAccount := member.GetAttributeValue("sAMAccountName")
 
-		if memberEmail == account {
+		if memberAccount == account {
 			return true, member
 		}
 	}
