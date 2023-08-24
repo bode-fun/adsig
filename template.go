@@ -9,13 +9,13 @@ import (
 	"git.bode.fun/adsig/config"
 )
 
-type Template struct {
+type Signature struct {
 	Name   string
 	Fields map[string]string
 	Files  []string
 }
 
-func (t Template) ParseFiles() ([]*template.Template, error) {
+func (s Signature) ParseFiles() ([]*template.Template, error) {
 	tmpls := make([]*template.Template, 0)
 
 	supportedExtensions := []string{
@@ -25,7 +25,7 @@ func (t Template) ParseFiles() ([]*template.Template, error) {
 		".htm",
 	}
 
-	for _, fPath := range t.Files {
+	for _, fPath := range s.Files {
 		templateName := filepath.Base(fPath)
 		templateExt := filepath.Ext(fPath)
 
@@ -52,50 +52,50 @@ func (t Template) ParseFiles() ([]*template.Template, error) {
 	return tmpls, nil
 }
 
-func filterTemplatesByName(src []Template, names []string) []Template {
-	templates := make([]Template, 0)
+func filterSignaturesByName(src []Signature, names []string) []Signature {
+	signatures := make([]Signature, 0)
 
 	for _, name := range names {
-		for _, tmpl := range src {
-			if name == tmpl.Name {
-				templates = append(templates, tmpl)
+		for _, sig := range src {
+			if name == sig.Name {
+				signatures = append(signatures, sig)
 			}
 		}
 	}
 
-	return templates
+	return signatures
 }
 
-func templatesFromConfig(cnf config.Config) ([]Template, error) {
+func SignaturesFromConfig(cnf config.Config) ([]Signature, error) {
 	// Get templates
 	templatesDir, err := getTemplatesFolder()
 	if err != nil {
 		return nil, err
 	}
 
-	templates := make([]Template, 0)
+	signatures := make([]Signature, 0)
 
 	for cnfTmplName, cnfTmpl := range cnf.Templates {
-		tmpl := Template{
+		sig := Signature{
 			Name:   cnfTmplName,
 			Fields: cnfTmpl.Fields,
 			Files:  make([]string, 0),
 		}
 
-		tmplFiles, err := getFilesForTemplate(templatesDir, tmpl.Name)
+		sigTemplateFiles, err := getFilesForSignature(templatesDir, sig.Name)
 		if err != nil {
 			return nil, err
 		}
 
-		tmpl.Files = tmplFiles
+		sig.Files = sigTemplateFiles
 
-		templates = append(templates, tmpl)
+		signatures = append(signatures, sig)
 	}
 
-	return templates, nil
+	return signatures, nil
 }
 
-func getFilesForTemplate(templatesDir, signatureName string) ([]string, error) {
+func getFilesForSignature(templatesDir, signatureName string) ([]string, error) {
 	filePaths := make([]string, 0)
 
 	signatureExtensions := []string{

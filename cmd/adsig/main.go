@@ -34,6 +34,7 @@ func main() {
 
 func mainE(log *log.Logger) error {
 	var emailSearch string
+
 	flag.StringVar(&emailSearch, "email", "", "The email to search for")
 
 	flag.Parse()
@@ -74,9 +75,8 @@ func mainE(log *log.Logger) error {
 		if ok, member := group.MemberByEmail(emailSearch); ok {
 			log.Infof("%s is a member of the group \"%s\" with %d members", emailSearch, group.Name, len(group.Members))
 
-			for _, gTmpl := range group.Templates {
-				txtTmpls, err := gTmpl.ParseFiles()
-
+			for _, sig := range group.Signatures {
+				tmpls, err := sig.ParseFiles()
 				if err != nil {
 					return err
 				}
@@ -87,15 +87,15 @@ func mainE(log *log.Logger) error {
 
 				v.Fields = make(map[string]string)
 
-				for key, attribute := range gTmpl.Fields {
+				for key, attribute := range sig.Fields {
 					v.Fields[key] = member.GetAttributeValue(attribute)
 				}
 
-				for _, txtTmpl := range txtTmpls {
+				for _, tmpl := range tmpls {
 					fmt.Println()
-					fmt.Println(txtTmpl.Name())
+					fmt.Println(tmpl.Name())
 					fmt.Println("------------------------------------------------")
-					txtTmpl.Execute(os.Stdout, v)
+					tmpl.Execute(os.Stdout, v)
 				}
 			}
 		}
@@ -117,6 +117,7 @@ func startServer(log *log.Logger, cnf config.Config) error {
 	}
 
 	log.Infof("Starting server on %s", addr)
+
 	if err := srv.ListenAndServe(); err != nil && !errors.Is(err, http.ErrServerClosed) {
 		return err
 	}

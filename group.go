@@ -7,9 +7,9 @@ import (
 )
 
 type Group struct {
-	Name      string
-	Templates []Template
-	Members   []*ldap.Entry
+	Name       string
+	Signatures []Signature
+	Members    []*ldap.Entry
 }
 
 func (g Group) MemberByEmail(email string) (ok bool, member *ldap.Entry) {
@@ -27,7 +27,7 @@ func (g Group) MemberByEmail(email string) (ok bool, member *ldap.Entry) {
 }
 
 func GroupsFromConfig(cnf config.Config, conn *ldap.Conn) ([]Group, error) {
-	templates, err := templatesFromConfig(cnf)
+	templates, err := SignaturesFromConfig(cnf)
 	if err != nil {
 		return nil, err
 	}
@@ -36,9 +36,9 @@ func GroupsFromConfig(cnf config.Config, conn *ldap.Conn) ([]Group, error) {
 
 	for cnfGroupName, cnfGroup := range cnf.Groups {
 		group := Group{
-			Name:      cnfGroupName,
-			Templates: make([]Template, 0),
-			Members:   make([]*ldap.Entry, 0),
+			Name:       cnfGroupName,
+			Signatures: make([]Signature, 0),
+			Members:    make([]*ldap.Entry, 0),
 		}
 
 		entries, err := searchMembersForGroup(conn, cnfGroup.BaseDN, cnfGroup.AdFilter)
@@ -48,7 +48,7 @@ func GroupsFromConfig(cnf config.Config, conn *ldap.Conn) ([]Group, error) {
 
 		group.Members = filterMembersByEmailDenylist(entries, cnfGroup.ExcludeEmails)
 
-		group.Templates = filterTemplatesByName(templates, cnfGroup.Templates)
+		group.Signatures = filterSignaturesByName(templates, cnfGroup.Templates)
 
 		groups = append(groups, group)
 	}
