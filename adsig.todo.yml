@@ -22,19 +22,18 @@ groups: # TODO: Required
 templates:
     example_de:
         # langCode: de # https://www.andiamo.co.uk/resources/iso-language-codes/ # TODO: Language lookup table
-        # dir: "templates/example_de_christmas" # TODO: Default value: "<CWD>" + "templates" + "<TEMPLATE_NAME>"; Optional
-        # files: # TODO: Default value: "signature" with html, rtf, and txt extension; Optional
-        #     - signature.html
-        #     - signature.rtf
-        #     - signature.txt
+        # files: # TODO: Default value: <TEMPLATE_NAME> with html, rtf, and txt extension; Optional
+        #     - example_de.html
+        #     - example_de.rtf
+        #     - example_de.txt
         fields: # TODO: Required
             city: l
             company: company
             country: co
             department: department
             fax: facsimileTelephoneNumber
-            firstName: sn
-            lastName: givenName
+            firstName: givenName
+            lastName: sn
             phone: telephoneNumber
             postalCode: postalCode
             street: streetAddress
@@ -49,8 +48,8 @@ templates:
             country: co
             department: department
             fax: facsimileTelephoneNumber
-            firstName: sn
-            lastName: givenName
+            firstName: givenName
+            lastName: sn
             phone: telephoneNumber
             postalCode: postalCode
             street: streetAddress

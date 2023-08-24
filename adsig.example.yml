@@ -27,8 +27,8 @@ templates:
             country: co
             department: department
             fax: facsimileTelephoneNumber
-            firstName: sn
-            lastName: givenName
+            firstName: givenName
+            lastName: sn
             phone: telephoneNumber
             postalCode: postalCode
             street: streetAddress
@@ -42,8 +42,8 @@ templates:
             country: co
             department: department
             fax: facsimileTelephoneNumber
-            firstName: sn
-            lastName: givenName
+            firstName: givenName
+            lastName: sn
             phone: telephoneNumber
             postalCode: postalCode
             street: streetAddress
