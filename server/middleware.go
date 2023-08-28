@@ -3,6 +3,12 @@ package server
 import "github.com/go-chi/chi/v5/middleware"
 
 func (s *Server) useMiddleware() {
+	// FIXME: When needed, add the following CORS middleware: "github.com/rs/cors"
+	// FIXME: Add security headers via "github.com/unrolled/secure"
+	// FIXME: Maybe add UBER's rate-limit middleware to avoid flooding the AD
+	// FIXME: When adding a ui, add CSRF protection via "github.com/justinas/nosurf"
+	// FIXME: Add Gzip via github.com/klauspost/compress
+
 	// Give each request a unique ID
 	s.router.Use(middleware.RequestID)
 
@@ -23,10 +29,4 @@ func (s *Server) useMiddleware() {
 
 	// A panic should not quit the program
 	s.router.Use(middleware.Recoverer)
-
-	// FIXME: When needed, add the following CORS middleware: "github.com/rs/cors"
-	// FIXME: Add security headers via "github.com/unrolled/secure"
-	// FIXME: Maybe add UBER's rate-limit middleware to avoid flooding the AD
-	// FIXME: When adding a ui, add CSRF protection via "github.com/justinas/nosurf"
-	// FIXME: Add Gzip via github.com/klauspost/compress
 }
