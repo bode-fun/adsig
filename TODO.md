@@ -2,18 +2,14 @@
 
 ## Configuration
 
-- [ ] Get config from standard unix config locations.
+- [ ] Get config from standard unix config locations or remote server.
 - [ ] Parse environment variables from YAML config.
 - [ ] Validate the config values.
 
 ## Templates
 
-- [ ] Store DB in the filesystem under `/var/lib/adsig`, because `/var/tmp` might be deleted. [Ref](https://refspecs.linuxfoundation.org/FHS_3.0/fhs/ch05s08.html)
-
-## API
-
-- [ ] Add API to request signatures for a given user.
-  - [ ] Use DN or sAMAccountName as identifier, because multiple user might share an email address.
+- [ ] Store and render templates in memory
+  - [ ] Save signatures to `%APPDATA%\Microsoft\Signatures`
 
 ## Error Handling
 
