@@ -3,7 +3,6 @@ package config
 import (
 	"errors"
 	"io"
-	"time"
 
 	"git.bode.fun/adsig/internal/util"
 	"gopkg.in/yaml.v3"
@@ -26,34 +25,6 @@ type configMember interface {
 	setDefaults()
 	normalize()
 }
-
-// Server
-// ------------------------------------------------------------------------
-
-var _ configMember = (*Server)(nil)
-
-type Server struct {
-	Host string `yaml:"host"`
-	Port int    `yaml:"port"`
-	// Optional
-	ReadTimeout time.Duration `yaml:"readTimeout,omitempty"`
-	// Optional
-	WriteTimeout time.Duration `yaml:"writeTimeout,omitempty"`
-}
-
-func (s *Server) setDefaults() {
-	var defaultTimeout time.Duration = 30
-
-	if s.ReadTimeout == 0 {
-		s.ReadTimeout = defaultTimeout
-	}
-
-	if s.WriteTimeout == 0 {
-		s.WriteTimeout = defaultTimeout
-	}
-}
-
-func (s *Server) normalize() {}
 
 // Connection
 // ------------------------------------------------------------------------
@@ -113,7 +84,6 @@ func (t *Template) normalize()   {}
 var _ configMember = (*Config)(nil)
 
 type Config struct {
-	Server     Server              `yaml:"server"`
 	Connection Connection          `yaml:"connection"`
 	Groups     map[string]Group    `yaml:"groups"`
 	Templates  map[string]Template `yaml:"templates"`
@@ -121,7 +91,6 @@ type Config struct {
 
 func (c *Config) setDefaults() {
 	c.Connection.setDefaults()
-	c.Server.setDefaults()
 
 	for gName, g := range c.Groups {
 		g.setDefaults()
@@ -136,7 +105,6 @@ func (c *Config) setDefaults() {
 
 func (c *Config) normalize() {
 	c.Connection.normalize()
-	c.Server.normalize()
 
 	for gName, g := range c.Groups {
 		g.normalize()

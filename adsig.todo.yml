@@ -1,9 +1,3 @@
-server: # TODO: Required
-    host: "127.0.0.1" # TODO: Required
-    port: 8080 # TODO: Required
-    readTimeout: 30
-    writeTimeout: 30
-
 connection: # TODO: Required
     address: ldap://example.local:389 # TODO: ENV Var; Required
     userDN: ${USER_DN} # TODO: ENV Var; Required

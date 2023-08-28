@@ -1,9 +1,3 @@
-server:
-    host: "127.0.0.1"
-    port: 8080
-    readTimeout: 30 # Optional, default value.
-    writeTimeout: 30 # Optional, default value.
-
 connection:
     address: ldap://example.local:389
     userDN: CN=ro_user,CN=Users,DC=example,DC=local
