@@ -1,5 +1,10 @@
 # TODO
 
+## General
+
+- [ ] Modify the registry to set the default signature.
+- [ ] Get the sAMAccountname from Windows directly.
+
 ## Configuration
 
 - [ ] Get config from standard unix config locations or remote server.
@@ -19,5 +24,13 @@
 
 ## Optimizations
 
-- [ ] Don't rebuild the Group/Member tree every request.
 - [ ] Try to reduce the references kept around in the Group/Member tree.
+
+## Daemon
+
+- [ ] Add a daemon mode for small companies, which usually don't use a device management solution.
+
+## Testing
+
+- [ ] Write unit tests
+- [ ] Setup a test AD
